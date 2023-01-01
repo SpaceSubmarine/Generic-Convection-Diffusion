@@ -1,0 +1,5 @@
+potential:
+https://www.youtube.com/watch?v=mk1_bbxZoF4&t=514s
+
+Navier-Stokes Python:
+https://www.youtube.com/watch?v=BQLvNLgMTQE
