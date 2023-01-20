@@ -1,18 +1,14 @@
-import time
 import numpy as np
 import matplotlib.pyplot as plt
-
-# Clear command history
-tic = time.time()
 
 # Input Data
 N = 50
 M = N
-alpha = 5
+alpha = 10
 
 # UDS
 Ape = 1
-rho_gamma = 15
+rho_gamma = 1  # 1, 5, 10, 10**3, 10**6
 error = 1e-6
 MaxIter = 1e5
 
@@ -101,7 +97,7 @@ for i in range(N + 2):
 
 phi_else = 1 - np.tanh(alpha)
 
-# Coeficients
+# Coefficients
 an = np.zeros((M + 2, N + 2))
 as_ = np.zeros((M + 2, N + 2))
 ae = np.zeros((M + 2, N + 2))
@@ -212,8 +208,6 @@ while Iter < MaxIter and dif > error:
     error_list =[]
     for j in range(1, N + 1):
         for i in range(1, M + 1):
-            ######################################################################
-            #######################################################################
             xp = x[i, j]
             if i == 1 and xmin <= xp <= xmid:  # bot_inlet
                 PHI[i, j] = 1 + np.tanh(alpha * (2 * xp + 1))
@@ -234,20 +228,64 @@ while Iter < MaxIter and dif > error:
     dif = np.max(np.array(error_list))
     print(Iter, dif)
 
+# REPORT SECTION============================================
+print("Report------------------------------------")
+print("Inputs: ")
+print("N =  ", N)
+print("M =  ", M)
+print("Alpha = ", alpha)
+print("Scheme: USD")
+print("Rho_Gamma = ", rho_gamma)
+print("Final error = ", dif)
+print("rho_gamma = ", rho_gamma)
+print("MaxIter = ", MaxIter)
+print("Number of Iterations = ", Iter)
 
-# PLOT
+
+# PLOT SECTION =============================================
+# PHI MAP
 plt.style.use("dark_background")
+figure0 = plt.figure(figsize=(10, 8), dpi=100)
+plt.ylabel('Py Nodes')
+plt.xlabel('Px Nodes')
+plt.title(f'Distribution of PHI with {N + 2}x{M + 2} and scheme USD. rho/Gamma = {rho_gamma}')
 plt.imshow(PHI, interpolation="gaussian", cmap="inferno", origin='lower')
-plt.show()
+plt.colorbar(label="PHI")
+plt.savefig(str(rho_gamma) + '_UDS_' + str(alpha) + str("_PHI_") + str(N) + '.png', dpi=200)
 
-figure1 = plt.figure(figsize=(10, 8), dpi=80)
+#CONTOURS
+figure1 = plt.figure(figsize=(10, 8), dpi=100)
 plt.set_cmap('jet')
 plt.contour(PHI, levels=64, colors="green", linewidths=0.5, antialiased=True)
 plt.ylabel('Py Nodes')
 plt.xlabel('Px Nodes')
-plt.title(f'Distribution of \phi with {N + 2}x{M + 2} and scheme USD. rho/Gamma = {rho_gamma}')
-plt.box(on=None)
+plt.title(f'Distribution of PHI with {N + 2}x{M + 2} and scheme USD. rho/Gamma = {rho_gamma}')
 plt.axis('tight')
 plt.axis('equal')
+plt.savefig(str(rho_gamma) + '_UDS_' + str(alpha) + str("_ISO_")+ str(N) + '.png', dpi=200)
 
+# PHI MIXED CONTOURS
+figure2 = plt.figure(figsize=(10, 8), dpi=100)
+plt.set_cmap('jet')
+plt.imshow(PHI, interpolation="gaussian", cmap="inferno", origin='lower')
+plt.colorbar(label="PHI")
+plt.contour(PHI, levels=64, colors="white", linewidths=0.5, antialiased=True, alpha=0.5 )
+plt.ylabel('Py Nodes')
+plt.xlabel('Px Nodes')
+plt.title(f'Distribution of PHI with {N + 2}x{M + 2} and scheme USD. rho/Gamma = {rho_gamma}')
+plt.axis('tight')
+plt.axis('equal')
+plt.savefig(str(rho_gamma) + '_UDS_' + str(alpha) + str("_ISO2_")+ str(N) + '.png', dpi=200)
+
+# QUIVER
+figure4 = plt.figure(figsize=(10, 8), dpi=100)
+plt.quiver(x, y, vx, vy, color='w', alpha=1, scale=70, width=0.0005)
+plt.ylabel('Py Nodes')
+plt.xlabel('Px Nodes')
+plt.autoscale()
+plt.gca().set_aspect('equal', adjustable='box')
+plt.title(f'Velocity Field {N + 2}x{M + 2} and scheme USD.')
+plt.axis('tight')
+plt.axis('equal')
+plt.savefig(str(rho_gamma) + '_UDS_' + str(alpha) + str("_VP_") + str(N) + '.png', dpi=200)
 plt.show()
